@@ -15,8 +15,8 @@ screen_width, screen_height = 900, 500
 
 # TODO 1:
 # Initialize the screen with the given width and height. Set the caption of the window to "Pong Invaders!"
-screen = pygamr.display.set_mode((900,500))
-pygame.display.set_caption("Pong Invaders")
+screen = pygame.display.set_mode((screen_width, screen_height))
+pygame.display.set_caption("Pong Invaders!")
 
 # Define colors for the game
 WHITE = (255, 255, 255)
@@ -60,8 +60,8 @@ SPACE_BG = pygame.transform.scale(pygame.image.load(
 
 class Spaceship(pygame.sprite.Sprite):
     def __init__(self, x, y, health, color):
-        super().__init__()
         # TODO 2: Call the inherited class __init__ method
+        super().__init__()
         
         
         self.color = color
@@ -95,11 +95,16 @@ class Spaceship(pygame.sprite.Sprite):
             # Up - K_UP, Down - K_DOWN, Left - K_LEFT, Right - K_RIGHT
             # TODO 6: Complete the movement of the yellow spaceship
             # This is similar to the red spaceship movement, but the keys and boundaries are different
-                if keys[pygame.K_LEFT] and self.rect.left > screen_width // 2: self.rect.x -= VEL
-                if keys[pygame.K_RIGHT] and self.rect.right < screen_width: self.rect.x += VEL
-                if keys[pygame.K_UP] and self.rect.top > 0: self.rect.y -= VEL
-                if keys[pygame.K_DOWN] and self.rect.bottom < screen_height: self.rect.y += VEL
-                pass
+        if keys[pygame.K_LEFT] and self.rect.left > screen_width // 2:
+            self.rect.x -= VEL
+        if keys[pygame.K_RIGHT] and self.rect.right < screen_width:
+            self.rect.x += VEL
+        if keys[pygame.K_UP] and self.rect.top > 0:
+            self.rect.y -= VEL
+        if keys[pygame.K_DOWN] and self.rect.bottom < screen_height:
+            self.rect.y += VEL
+
+            pass
             
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, x, y, color):
@@ -109,9 +114,9 @@ class Bullet(pygame.sprite.Sprite):
         self.image.fill(color)
         
         # TODO 7: Compute the bounding rectangle of the image
-        self.rect = self.image.get_rect()
+        seself.rect = self.image.get_rect()
         # TODO 8: Assign the center of the rectangle to the given x and y coordinates
-        self.rect.center = self.rect.center = (x, y)
+        self.rect.center = (x, y)
         
     def update(self):
         if self.color == RED:
@@ -124,15 +129,19 @@ class Bullet(pygame.sprite.Sprite):
                 self.kill()
                 BULLET_HIT_SOUND.play()
         if self.color == YELLOW:
-            # For yellow bullets, move the bullet to the left. Use the BULLET_VEL to control the speed of the bullet
-            # Check if the bullet collides with the red spaceship
-            # If so, reduce the health of the red spaceship by 1, kill the bullet, and play the BULLET_HIT_SOUND
-            self.rect.x -= BULLET_VEL
+            # TODO 9: Do the same for the yellow bullets, but move the bullet to the left
+            # For yellow bullets, move the bullet to the left (opposite direction from red bullets)
+            # TODO 9: Implement the behavior for yellow bullets
+            self.rect.x -= BULLET_VEL  # Example: Move left
             if self.rect.colliderect(red):
                 red.health -= 1
                 self.kill()
                 BULLET_HIT_SOUND.play()
-
+            pass
+        
+        # If the bullet goes off the screen, kill the bullet
+        if self.rect.right < 0 or self.rect.left > screen_width:
+            self.kill()
 
 # TODO 10: Create a group for the spaceships, red bullets and yellow bullets
 spaceship_group = pygame.sprite.Group()
@@ -152,8 +161,8 @@ while True:
     pygame.display.update()
     
     # TODO 13: Draw the background at (0, 0)
-    screen.fill(BLACK)
-
+    screen.blit(SPACE_BG, (0, 0))
+    
     # Draw the middle border
     pygame.draw.rect(screen, BLACK, BORDER)
 
@@ -170,10 +179,8 @@ while True:
     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-             pygame.quit()
-             sys.exit()
             # TODO 15: If the user clicks the close button, quit the game
-             pass
+            pass
     
         if event.type == pygame.KEYDOWN:
             # If the user presses the left control key (K_LCTRL) and the number of red bullets is less than MAX_BULLETS,
@@ -185,10 +192,10 @@ while True:
                 BULLET_FIRE_SOUND.play()
             # TODO 16: Do the same for the yellow spaceship, but use the right control key (K_RCTRL)
             if event.key == pygame.K_RCTRL and len(yellow_bullet_group) < MAX_BULLETS:
-                 bullet = Bullet(yellow.rect.centerx, yellow.rect.centery, YELLOW)
-                 yellow_bullet_group.add(bullet)
-                 BULLET_FIRE_SOUND.play()
-                 pass
+                bullet = Bullet(yellow.rect.centerx, yellow.rect.centery, YELLOW)
+                yellow_bullet_group.add(bullet)
+                BULLET_FIRE_SOUND.play()
+
                 
     
     winner_text = ""
@@ -197,20 +204,21 @@ while True:
     if yellow.health <= 0:
         winner_text = "Red Wins!"
     if winner_text != "":
+        # TODO 17: If there is a winner, display the winner text and continue the loop
+    if winner_text != "":
         winner_surface = WINNER_FONT.render(winner_text, True, YELLOW if winner_text == "Red Wins!" else RED)
         screen.blit(winner_surface, (screen_width // 2 - winner_surface.get_width() // 2, screen_height // 2 - winner_surface.get_height() // 2))
         pygame.display.update()
-        pygame.time.delay(2000) 
-      
-        # TODO 17: If there is a winner, display the winner text and continue the loop
-       
-    pass
-    continue
+        pygame.time.delay(2000)
+        continue
+
+        pass
+        continue
 
     # TODO 18: Draw the spaceships, red bullets and yellow bullets
-    # Draw the spaceships
-    screen.blit(red.image, red.rect)
-    screen.blit(yellow.image, yellow.rect)
+# Draw the spaceships
+screen.blit(red.image, red.rect)
+screen.blit(yellow.image, yellow.rect)
 
 # Draw the red bullets
 for bullet in red_bullet_group:
@@ -221,10 +229,8 @@ for bullet in yellow_bullet_group:
     screen.blit(bullet.image, bullet.rect)
 
     
-    
-
-    # TODO 19: Update the spaceships, red bullets and yellow bullets
-    # Update the spaceships
+# TODO 19: Update the spaceships, red bullets and yellow bullets
+# Update the spaceships
 spaceship_group.update()
 
 # Update the red bullets
@@ -232,6 +238,6 @@ red_bullet_group.update()
 
 # Update the yellow bullets
 yellow_bullet_group.update()
-    
-    
 
+    
+    
